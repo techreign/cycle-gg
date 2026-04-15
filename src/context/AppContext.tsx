@@ -8,6 +8,7 @@ import type {
   DayInsight,
   CyclePhase,
 } from '../types'
+import type { CycleConfig } from '../utils/storage'
 import { useCycleData } from '../hooks/useCycleData'
 import { useGameData } from '../hooks/useGameData'
 import {
@@ -26,10 +27,16 @@ interface AppContextValue {
   updatePeriod: (id: string, updates: Partial<Omit<PeriodEntry, 'id'>>) => void
   averageCycleLength: number
 
+  // Cycle config
+  cycleConfig: CycleConfig | null
+  updateCycleConfig: (config: CycleConfig) => void
+  clearCycleConfig: () => void
+
   // Game data
   games: GameEntry[]
   addGame: (entry: Omit<GameEntry, 'id'>) => GameEntry
   removeGame: (id: string) => void
+  setGames: (games: GameEntry[]) => void
 
   // Analytics (derived)
   enrichedGames: EnrichedGame[]
@@ -85,9 +92,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updatePeriod: cycleData.updatePeriod,
     averageCycleLength: cycleData.averageCycleLength,
 
+    cycleConfig: cycleData.config,
+    updateCycleConfig: cycleData.updateCycleConfig,
+    clearCycleConfig: cycleData.clearConfig,
+
     games: gameData.games,
     addGame: gameData.addGame,
     removeGame: gameData.removeGame,
+    setGames: gameData.setAllGames,
 
     enrichedGames,
     phaseStats,

@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LogGamePage } from './pages/LogGamePage'
 import { LogPeriodPage } from './pages/LogPeriodPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { SetupPage } from './pages/SetupPage'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route element={<AppShell />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/setup" element={<SetupPage />} />
             <Route path="/log-game" element={<LogGamePage />} />
             <Route path="/log-period" element={<LogPeriodPage />} />
             <Route path="/settings" element={<SettingsPage />} />

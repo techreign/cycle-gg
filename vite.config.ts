@@ -4,6 +4,30 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api/riot/americas': {
+        target: 'https://americas.api.riotgames.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/riot\/americas/, ''),
+      },
+      '/api/riot/europe': {
+        target: 'https://europe.api.riotgames.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/riot\/europe/, ''),
+      },
+      '/api/riot/asia': {
+        target: 'https://asia.api.riotgames.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/riot\/asia/, ''),
+      },
+      '/api/riot/sea': {
+        target: 'https://sea.api.riotgames.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/riot\/sea/, ''),
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),

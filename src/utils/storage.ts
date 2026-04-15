@@ -2,6 +2,55 @@ import type { PeriodEntry, GameEntry } from '../types'
 
 const PERIODS_KEY = 'cycle_gg_periods'
 const GAMES_KEY = 'cycle_gg_games'
+const CYCLE_CONFIG_KEY = 'cycle_gg_cycle_config'
+const RIOT_CONFIG_KEY = 'cycle_gg_riot_config'
+
+// --- Cycle Config ---
+
+export interface CycleConfig {
+  lastPeriodStart: string  // YYYY-MM-DD
+  cycleLength: number      // default 28
+  periodDuration: number   // default 5
+}
+
+export function getCycleConfig(): CycleConfig | null {
+  try {
+    const raw = localStorage.getItem(CYCLE_CONFIG_KEY)
+    return raw ? (JSON.parse(raw) as CycleConfig) : null
+  } catch { return null }
+}
+
+export function setCycleConfig(config: CycleConfig): void {
+  localStorage.setItem(CYCLE_CONFIG_KEY, JSON.stringify(config))
+}
+
+export function clearCycleConfig(): void {
+  localStorage.removeItem(CYCLE_CONFIG_KEY)
+}
+
+// --- Riot Account Config ---
+
+export interface RiotAccountConfig {
+  gameName: string
+  tagLine: string
+  region: string
+  puuid: string
+}
+
+export function getRiotConfig(): RiotAccountConfig | null {
+  try {
+    const raw = localStorage.getItem(RIOT_CONFIG_KEY)
+    return raw ? (JSON.parse(raw) as RiotAccountConfig) : null
+  } catch { return null }
+}
+
+export function setRiotConfig(config: RiotAccountConfig): void {
+  localStorage.setItem(RIOT_CONFIG_KEY, JSON.stringify(config))
+}
+
+export function clearRiotConfig(): void {
+  localStorage.removeItem(RIOT_CONFIG_KEY)
+}
 
 // --- Periods ---
 
