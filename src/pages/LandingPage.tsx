@@ -57,27 +57,29 @@ export function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#070510' }}>
-      {/* Ambient glows */}
+    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#110a0a' }}>
+      {/* Ambient glows — warm burgundy/rose */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full blur-[120px] opacity-12"
-          style={{ background: '#ec4899' }} />
-        <div className="absolute top-1/3 right-1/3 w-[500px] h-[500px] rounded-full blur-[120px] opacity-8"
-          style={{ background: '#8b5cf6' }} />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full blur-[140px] opacity-15"
+          style={{ background: '#9f1239' }} />
+        <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-10"
+          style={{ background: '#be123c' }} />
+        <div className="absolute top-1/2 right-1/3 w-[400px] h-[400px] rounded-full blur-[100px] opacity-8"
+          style={{ background: '#c2410c' }} />
       </div>
 
       <div className="relative z-10 w-full max-w-[660px] mx-auto">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-5xl md:text-6xl font-black tracking-tight">
-            <span className="gradient-text">Cycle</span>
+            <span style={{ background: 'linear-gradient(135deg, #fb7185, #e11d48, #9f1239)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Cycle</span>
             <span className="text-white">.gg</span>
           </h1>
-          <p className="text-slate-600 text-xs mt-1.5">does your period affect your LP?</p>
+          <p className="text-rose-900/60 text-xs mt-1.5">does your period affect your LP?</p>
         </div>
 
         {/* ─── op.gg-style search bar ───────────────────────────────── */}
-        <div className="rounded-full flex items-center h-[60px] overflow-hidden" style={{ backgroundColor: '#282830' }}>
+        <div className="rounded-full flex items-center h-[60px] overflow-hidden" style={{ backgroundColor: '#1f1215' }}>
           {/* Region selector */}
           <div className="flex-shrink-0 pl-5 pr-4 h-full flex flex-col justify-center">
             <span className="text-[10px] text-slate-500 font-medium leading-none mb-1">Region</span>
@@ -89,7 +91,7 @@ export function LandingPage() {
                 disabled={riot.isLoading}
               >
                 {REGION_OPTIONS.map((r) => (
-                  <option key={r.value} value={r.value} className="bg-[#282830] text-white">
+                  <option key={r.value} value={r.value} className="bg-[#1f1215] text-white">
                     {r.label}
                   </option>
                 ))}
@@ -121,7 +123,7 @@ export function LandingPage() {
           <button
             onClick={handleGo}
             disabled={riot.isLoading || !riotId.includes('#')}
-            className="flex-shrink-0 h-full px-5 flex items-center text-lg font-black text-pink-400 hover:text-pink-300 disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
+            className="flex-shrink-0 h-full px-5 flex items-center text-lg font-black text-rose-400 hover:text-rose-300 disabled:text-rose-900/40 disabled:cursor-not-allowed transition-colors"
           >
             {riot.isLoading ? '...' : '.GG'}
           </button>
@@ -129,7 +131,7 @@ export function LandingPage() {
 
         {/* Error */}
         {riot.error && (
-          <div className="mt-3 px-4 py-2 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs text-center">
+          <div className="mt-3 px-4 py-2 rounded-lg bg-red-900/20 border border-red-800/30 text-rose-300 text-xs text-center">
             {riot.error}
           </div>
         )}
@@ -139,7 +141,7 @@ export function LandingPage() {
           <div className="mt-3 space-y-1.5">
             <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-pink-500 to-violet-500 rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-rose-600 to-red-800 rounded-full transition-all duration-300"
                 style={{ width: `${(riot.progress.current / riot.progress.total) * 100}%` }}
               />
             </div>
@@ -150,7 +152,7 @@ export function LandingPage() {
         )}
 
         {/* ─── Period data row ──────────────────────────────────────── */}
-        <div className="mt-4 rounded-2xl flex items-center gap-3 px-5 py-3" style={{ backgroundColor: '#282830' }}>
+        <div className="mt-4 rounded-2xl flex items-center gap-3 px-5 py-3" style={{ backgroundColor: '#1f1215' }}>
           <span className="text-sm">🩸</span>
           <div className="flex-1 min-w-0">
             <label className="block text-[10px] text-slate-500 font-medium mb-0.5">Last period start</label>
@@ -196,17 +198,19 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="px-4 py-2 rounded-lg text-center" style={{ backgroundColor: '#282830' }}>
+          <div className="px-4 py-2 rounded-lg text-center" style={{ backgroundColor: '#1f1215' }}>
             <p className="text-xs text-slate-400 italic">
               "tracking my duo's menstrual cycle increased my winrate by 5.5%"
             </p>
-            <p className="text-[10px] text-slate-600 mt-0.5">— @SaskioLoL</p>
+            <p className="text-[10px] text-slate-600 mt-0.5">— a League player, probably</p>
           </div>
         </div>
 
         {/* Footer */}
-        <p className="text-slate-700 text-[11px] text-center mt-8">
-          free forever • inspired by @SaskioLoL • not affiliated with Riot Games
+        <p className="text-rose-900/40 text-[11px] text-center mt-8">
+          free forever • not affiliated with Riot Games
+          <br />
+          © {new Date().getFullYear()} Cycle.gg. All rights reserved.
         </p>
       </div>
     </div>

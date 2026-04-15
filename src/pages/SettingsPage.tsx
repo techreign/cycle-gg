@@ -204,7 +204,7 @@ export function SettingsPage() {
       <section className="glass-card p-6">
         <h2 className="text-base font-bold text-white mb-3">About</h2>
         <p className="text-slate-400 text-sm leading-relaxed">
-          Cycle.gg v1.0 • Inspired by @SaskioLoL • Built with 💜
+          Cycle.gg v1.0 • Built with 💜
         </p>
         <p className="text-slate-600 text-xs mt-2">
           All data is stored locally on your device. Nothing is sent to any server.
