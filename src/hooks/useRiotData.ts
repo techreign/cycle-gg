@@ -39,14 +39,14 @@ export interface UseRiotDataReturn {
 const RIOT_CONFIG_KEY = 'cycle_gg_riot_account'
 const LAST_FETCH_KEY = 'cycle_gg_riot_last_fetch'
 
-/** Delay between individual match-detail requests (ms). */
-const FETCH_DELAY_MS = 100
+/** Delay between individual match-detail requests (ms). ~1.5s = safe for dev key (20 req/s, 100 req/2min). */
+const FETCH_DELAY_MS = 1500
 
 /** After this many requests, pause to stay under the 100-req/2-min dev limit. */
-const BATCH_SIZE = 20
+const BATCH_SIZE = 18
 
-/** Pause duration between batches (ms). */
-const BATCH_PAUSE_MS = 2000
+/** Pause duration between batches (ms). Wait a full cycle reset. */
+const BATCH_PAUSE_MS = 125000
 
 // ---------------------------------------------------------------------------
 // Helper: sleep
@@ -193,7 +193,7 @@ export function useRiotData(): UseRiotDataReturn {
         // function reads riotConfig from closure so pass config directly via a
         // one-off inline call that mirrors the logic to avoid stale closure.
         const startTime = undefined // first fetch: get all available
-        const matchIds = await getMatchIds(config.puuid, config.region, 100, startTime)
+        const matchIds = await getMatchIds(config.puuid, config.region, 30, startTime)
 
         setProgress({ current: 0, total: matchIds.length })
 

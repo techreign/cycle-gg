@@ -68,13 +68,20 @@ function getApiKey(): string {
   return key
 }
 
-async function riotFetch(url: string): Promise<Response> {
+async function riotFetch(url: string, retries = 3): Promise<Response> {
   const res = await fetch(url, {
     headers: { 'X-Riot-Token': getApiKey() },
   })
   if (!res.ok) {
-    if (res.status === 429) throw new Error('Rate limited. Please wait a moment and try again.')
-    if (res.status === 403) throw new Error('Invalid API key. Check your Riot API key in settings.')
+    if (res.status === 429 && retries > 0) {
+      // Read Retry-After header, default to 10s
+      const retryAfter = Number(res.headers.get('Retry-After') || '10')
+      const waitMs = (retryAfter + 1) * 1000
+      await new Promise(r => setTimeout(r, waitMs))
+      return riotFetch(url, retries - 1)
+    }
+    if (res.status === 429) throw new Error('Rate limited. Please wait a couple minutes and try again.')
+    if (res.status === 403) throw new Error('Invalid or expired API key. Get a new one from developer.riotgames.com')
     if (res.status === 404) throw new Error('Account not found. Check your Riot ID and region.')
     throw new Error(`Riot API error: ${res.status}`)
   }
