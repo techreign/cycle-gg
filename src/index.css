@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-phase-menstrual: #f43f5e;
+  --color-phase-follicular: #a855f7;
+  --color-phase-ovulation: #ec4899;
+  --color-phase-luteal: #8b5cf6;
+  --color-bg-deep: #0d0a14;
+  --color-bg-surface: rgba(255, 255, 255, 0.05);
+  --color-bg-surface-hover: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-accent: #ec4899;
+  --color-accent-secondary: #8b5cf6;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* Base body styles */
+body {
+  background-color: var(--color-bg-deep);
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+}
+
+/* Glow effect for Bwipo mode */
+@keyframes bwipo-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(244, 63, 94, 0.6); }
+}
+
+.bwipo-glow {
+  animation: bwipo-glow 2s ease-in-out infinite;
+}
+
+/* Phase gradient background */
+.phase-gradient {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1));
+}
