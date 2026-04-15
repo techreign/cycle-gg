@@ -188,29 +188,6 @@ export function LandingPage() {
             <p className="text-[10px] text-slate-600 mt-1">— @SaskioLoL, probably</p>
           </div>
 
-          {/* Bwipo Fnatic GIF */}
-          <div className="flex justify-center">
-            <div className="rounded-xl overflow-hidden border border-white/10 w-[300px]">
-              <div style={{ position: 'relative', paddingBottom: '56%' }}>
-                <iframe
-                  src="https://tenor.com/embed/16508075"
-                  width="100%"
-                  height="100%"
-                  style={{ position: 'absolute', top: 0, left: 0, border: 'none' }}
-                  allowFullScreen
-                  title="Bwipo Fnatic"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Bwipo mode teaser */}
-          <div className="glass-card px-5 py-3 text-center max-w-sm mx-auto bwipo-glow">
-            <p className="text-xs text-rose-400 font-bold uppercase tracking-wider mb-1">😤 Bwipo Mode</p>
-            <p className="text-[11px] text-slate-500">
-              when your aggression score exceeds 8.6, you've entered Bwipo territory
-            </p>
-          </div>
         </div>
 
         {/* Footer */}
