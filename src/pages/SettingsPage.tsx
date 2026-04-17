@@ -2,34 +2,15 @@ import { useState } from 'react'
 import { useApp } from '../hooks/useApp'
 import { Button } from '../components/ui/Button'
 import { Modal } from '../components/ui/Modal'
-import { getUserRiotKey, setUserRiotKey, clearUserRiotKey } from '../utils/riotApi'
 
 export function SettingsPage() {
   const { averageCycleLength } = useApp()
 
-  const [apiKey, setApiKey] = useState(() => getUserRiotKey() ?? '')
-  const [keyStatus, setKeyStatus] = useState<'idle' | 'saved' | 'cleared'>('idle')
-  const [showKey, setShowKey] = useState(false)
   const [cycleLength, setCycleLength] = useState(averageCycleLength)
   const [importError, setImportError] = useState('')
   const [importSuccess, setImportSuccess] = useState(false)
   const [showClearModal, setShowClearModal] = useState(false)
   const [clearDone, setClearDone] = useState(false)
-
-  function handleSaveKey() {
-    const trimmed = apiKey.trim()
-    if (!trimmed) return
-    setUserRiotKey(trimmed)
-    setKeyStatus('saved')
-    setTimeout(() => setKeyStatus('idle'), 2500)
-  }
-
-  function handleClearKey() {
-    clearUserRiotKey()
-    setApiKey('')
-    setKeyStatus('cleared')
-    setTimeout(() => setKeyStatus('idle'), 2500)
-  }
 
   // ─── Export ──────────────────────────────────────────────────────────────
   function handleExport() {
@@ -100,64 +81,6 @@ export function SettingsPage() {
         <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>Manage your account and data.</p>
       </div>
 
-      {/* ─── Riot Developer Key (BYO) ─────────────────────────────────────── */}
-      <section className="glass-card p-6 mb-5">
-        <h2 className="text-base font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>Riot API Key</h2>
-        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
-          Cycle.gg never sees your key — it's stored only in your browser. Grab a free 24-hour dev key from{' '}
-          <a
-            href="https://developer.riotgames.com"
-            target="_blank"
-            rel="noreferrer"
-            className="underline font-semibold"
-            style={{ color: '#fb7185' }}
-          >
-            developer.riotgames.com
-          </a>{' '}
-          and paste it below.
-        </p>
-
-        {keyStatus === 'saved' && (
-          <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', color: '#34d399' }}>
-            API key saved. You can now connect your Riot account on the Setup page.
-          </div>
-        )}
-        {keyStatus === 'cleared' && (
-          <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b' }}>
-            API key removed.
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <input
-              type={showKey ? 'text' : 'password'}
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              className="field w-full font-mono text-xs pr-12"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button
-              type="button"
-              onClick={() => setShowKey(s => !s)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] font-semibold px-2 py-1 rounded hover:bg-white/10"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
-              {showKey ? 'Hide' : 'Show'}
-            </button>
-          </div>
-          <Button variant="primary" onClick={handleSaveKey} disabled={!apiKey.trim()}>
-            Save
-          </Button>
-          {getUserRiotKey() && (
-            <Button variant="danger" onClick={handleClearKey}>
-              Clear
-            </Button>
-          )}
-        </div>
-      </section>
 
       {/* ─── Cycle Length ─────────────────────────────────────────────────── */}
       <section className="glass-card p-6 mb-5">

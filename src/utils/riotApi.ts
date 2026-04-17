@@ -59,45 +59,15 @@ export type Region = keyof typeof REGIONS
 export type RoutingRegion = (typeof REGIONS)[Region]
 
 // ---------------------------------------------------------------------------
-// Key storage (user-supplied, kept in localStorage)
-// ---------------------------------------------------------------------------
-
-const RIOT_KEY_STORAGE = 'cycle_gg_riot_api_key'
-
-export function getUserRiotKey(): string | null {
-  try {
-    return localStorage.getItem(RIOT_KEY_STORAGE)
-  } catch {
-    return null
-  }
-}
-
-export function setUserRiotKey(key: string): void {
-  localStorage.setItem(RIOT_KEY_STORAGE, key.trim())
-}
-
-export function clearUserRiotKey(): void {
-  localStorage.removeItem(RIOT_KEY_STORAGE)
-}
-
-export class MissingRiotKeyError extends Error {
-  constructor() {
-    super('Add your Riot developer API key in Settings to connect.')
-    this.name = 'MissingRiotKeyError'
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Internal fetch helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * All Riot traffic goes through our same-origin /api/riot/* proxy so the
+ * server-held key is never exposed to the browser.
+ */
 async function riotFetch(url: string, retries = 3): Promise<Response> {
-  const key = getUserRiotKey()
-  if (!key) throw new MissingRiotKeyError()
-
-  const res = await fetch(url, {
-    headers: { 'X-Riot-Token': key },
-  })
+  const res = await fetch(url)
   if (!res.ok) {
     if (res.status === 429 && retries > 0) {
       const retryAfter = Number(res.headers.get('Retry-After') || '10')
@@ -105,9 +75,19 @@ async function riotFetch(url: string, retries = 3): Promise<Response> {
       await new Promise(r => setTimeout(r, waitMs))
       return riotFetch(url, retries - 1)
     }
-    if (res.status === 429) throw new Error('Rate limited. Please wait a couple minutes and try again.')
-    if (res.status === 401 || res.status === 403) {
-      throw new Error('Invalid or expired API key. Get a fresh one at developer.riotgames.com.')
+    if (res.status === 429) {
+      throw new Error('Too many requests right now. Give it a couple minutes and try again.')
+    }
+    if (res.status === 503) {
+      // Our proxy returns a friendly message when the server key is missing / expired.
+      let message = 'Riot data is temporarily unavailable. Come back shortly.'
+      try {
+        const body = (await res.json()) as { error?: string }
+        if (body?.error) message = body.error
+      } catch {
+        // ignore
+      }
+      throw new Error(message)
     }
     if (res.status === 404) throw new Error('Account not found. Check your Riot ID and region.')
     throw new Error(`Riot API error: ${res.status}`)

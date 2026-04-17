@@ -1,16 +1,12 @@
 /**
  * Vercel Edge Function — proxies Riot API requests from the browser.
  *
- * Path shape: /api/riot/{routing}/<...riot-path>
- *   routing ∈ {americas, europe, asia, sea}
+ * The key is held server-side only (RIOT_API_KEY env var) and is never
+ * exposed to the client. Visitors just hit /api/riot/{routing}/... and
+ * we forward to the correct regional Riot endpoint.
  *
- * The `vercel.json` rewrite strips the `/api/riot/` prefix and hands us
- * the remainder as a `path` query param. The client sends its own
- * developer key via the `X-Riot-Token` header; we forward to the
- * correct regional base URL and relay the response.
- *
- * Set `RIOT_API_KEY` as a Vercel environment variable to provide a
- * fallback key (optional — the canonical model is BYO-key).
+ * `vercel.json` rewrites /api/riot/{...}/ → /api/riot?path={...} so we
+ * can use a single function with a multi-segment capture.
  */
 
 export const config = { runtime: 'edge' }
@@ -24,6 +20,8 @@ const BASE_BY_ROUTING: Record<string, string> = {
   sea: 'https://sea.api.riotgames.com',
 }
 
+declare const process: { env: Record<string, string | undefined> }
+
 export default async function handler(request: Request): Promise<Response> {
   const url = new URL(request.url)
   const corsHeaders = buildCorsHeaders(request)
@@ -35,9 +33,17 @@ export default async function handler(request: Request): Promise<Response> {
     return jsonError(405, 'Only GET is supported.', corsHeaders)
   }
 
-  // The rewrite sends us the captured path (everything after /api/riot/)
-  // via the `path` query parameter. Fall back to parsing the URL path
-  // directly so the function also works when hit without the rewrite.
+  const token = process.env.RIOT_API_KEY
+  if (!token) {
+    return jsonError(
+      503,
+      'Riot data is temporarily unavailable. The server key needs to be refreshed — hang tight.',
+      corsHeaders,
+    )
+  }
+
+  // The rewrite sends us the captured path as ?path=…, but also keep a
+  // fallback that parses the URL directly for sanity.
   let rawPath = url.searchParams.get('path') ?? ''
   if (!rawPath) {
     rawPath = url.pathname.replace(/^\/api\/riot\/?/, '')
@@ -54,27 +60,27 @@ export default async function handler(request: Request): Promise<Response> {
 
   const riotPath = parts.slice(1).join('/')
 
-  // Forward all original query params except `path` (our internal marker).
+  // Forward all original query params except our internal `path` marker.
   const forwardedParams = new URLSearchParams(url.searchParams)
   forwardedParams.delete('path')
   const search = forwardedParams.toString() ? `?${forwardedParams.toString()}` : ''
 
   const riotUrl = `${BASE_BY_ROUTING[routing]}/${riotPath}${search}`
 
-  const token =
-    request.headers.get('X-Riot-Token') ??
-    (globalThis as unknown as { process?: { env: Record<string, string | undefined> } }).process?.env?.RIOT_API_KEY
-  if (!token) {
-    return jsonError(
-      401,
-      'No Riot API key supplied. Add your developer key in Settings.',
-      corsHeaders,
-    )
-  }
-
   const riotResponse = await fetch(riotUrl, {
     headers: { 'X-Riot-Token': token },
   })
+
+  // A 401/403 from Riot almost always means the server key rotated or
+  // was revoked. Surface that as a clear signal to the client so they
+  // can display a "come back soon" message rather than a scary error.
+  if (riotResponse.status === 401 || riotResponse.status === 403) {
+    return jsonError(
+      503,
+      'Riot data is temporarily unavailable — the server key expired. Come back shortly.',
+      corsHeaders,
+    )
+  }
 
   const headers = new Headers()
   headers.set('Content-Type', riotResponse.headers.get('Content-Type') ?? 'application/json')
@@ -98,7 +104,7 @@ function buildCorsHeaders(request: Request): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': allowDevOrigin,
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'X-Riot-Token, Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   }

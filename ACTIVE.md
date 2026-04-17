@@ -20,9 +20,10 @@ resolved:
   calendar with dashed rose outlines.
 - ✅ **Shareable insight card** — canvas-rendered 1080×1080 PNG with
   MPPD, phase bars, best phase, top champion. Download + clipboard copy.
-- ✅ **Security fix** — Riot API key no longer bundled in the client.
-  BYO-key via Settings → stored in user's localStorage → forwarded by
-  Vercel Edge Function at `api/riot/[...path].ts`.
+- ✅ **Security fix** — Riot API key held server-side only (Vercel env
+  var `RIOT_API_KEY`), proxied through the Edge Function at
+  `api/riot.ts`. Visitors just type their Riot ID — op.gg-style — no
+  client-side key UI.
 - ✅ **Lint** clean, **typecheck** clean, **build** clean.
 - ✅ **SEO/PWA** — OG + Twitter meta, warm theme color, rose favicon,
   sitemap, robots.txt, `_redirects` for SPA.

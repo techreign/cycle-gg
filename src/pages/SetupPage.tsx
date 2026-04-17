@@ -4,7 +4,7 @@ import { useApp } from '../hooks/useApp'
 import { useRiotData } from '../hooks/useRiotData'
 import { Button } from '../components/ui/Button'
 import type { Region } from '../utils/riotApi'
-import { REGIONS, getUserRiotKey } from '../utils/riotApi'
+import { REGIONS } from '../utils/riotApi'
 
 const REGION_OPTIONS = Object.keys(REGIONS) as Region[]
 
@@ -14,7 +14,6 @@ const labelClass = 'field-label'
 export function SetupPage() {
   const { cycleConfig, updateCycleConfig, games, setGames: setContextGames } = useApp()
   const riot = useRiotData()
-  const hasRiotKey = getUserRiotKey() !== null
 
   // ─── Riot form state ─────────────────────────────────────────────────────
   const [gameName, setGameName] = useState('')
@@ -92,17 +91,6 @@ export function SetupPage() {
         <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
           Enter your Riot ID to auto-pull match history.
         </p>
-
-        {!hasRiotKey && !riot.isConnected && (
-          <div className="mb-4 px-4 py-3 rounded-lg text-sm flex items-start gap-2" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b' }}>
-            <span>⚠</span>
-            <span>
-              Add your Riot developer key in{' '}
-              <Link to="/settings" className="underline font-semibold">Settings</Link>{' '}
-              first — Cycle.gg uses your own key so nothing leaves your browser.
-            </span>
-          </div>
-        )}
 
         {riot.isConnected && riot.riotConfig ? (
           <div className="flex items-center justify-between gap-4 flex-wrap">

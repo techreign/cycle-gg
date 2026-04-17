@@ -18,10 +18,10 @@ Live at **https://cycle.gg** (once deployed).
 - **Recharts** — phase bar charts and KDA trend line.
 - **LocalStorage** — all data lives in the user's browser. The app never
   sends a request to Cycle.gg's backend for personal data.
-- **Vercel Edge Function** at `api/riot/[...path].ts` — thin proxy that
-  forwards requests to the Riot API. It does **not** hold the user's
-  key; the browser sends it in an `X-Riot-Token` header and the function
-  just relays the request (plus CORS for local dev).
+- **Vercel Edge Function** at `api/riot.ts` — thin proxy that forwards
+  requests to the Riot API. The server-held `RIOT_API_KEY` never reaches
+  the browser; visitors just type their Riot ID and Cycle.gg fetches
+  match history for them (op.gg-style).
 
 ## Running locally
 
@@ -31,17 +31,32 @@ npm run dev
 ```
 
 The Vite dev server at `http://localhost:5173` proxies `/api/riot/{routing}`
-straight to Riot's regional endpoints (see `vite.config.ts`), mimicking what
-the production Vercel Edge Function does.
+straight to Riot's regional endpoints and injects `X-Riot-Token` from
+`.env`'s `RIOT_API_KEY` — mirroring what the production Vercel Edge
+Function does.
 
-## Riot API key (BYO)
+## Riot API key (server-side)
 
-Cycle.gg uses a **bring-your-own-key** model. Every user pastes their own
-developer key in the in-app Settings page; it lives only in that user's
-`localStorage` and is sent directly to the proxy via the `X-Riot-Token`
-header. The server never stores or logs it.
+Cycle.gg holds a single Riot API key server-side and serves all visitors
+from it. The key is **never** bundled into the browser; the client talks
+only to our same-origin `/api/riot/*` proxy.
 
-Get a free 24-hour dev key at <https://developer.riotgames.com>.
+Get a key at <https://developer.riotgames.com>:
+
+- **Development Key** — rotates every 24h. Fine for local testing.
+- **Personal API Key** — permanent, ~48h approval. Apply at
+  <https://developer.riotgames.com/app-type> → Personal. Required for a
+  stable public deployment.
+
+Local dev: drop the key into `.env` as `RIOT_API_KEY=...`, then
+`npm run dev`.
+
+Production (Vercel):
+```bash
+vercel env add RIOT_API_KEY production
+# paste the key when prompted, redeploy
+vercel deploy --prod
+```
 
 ## Deploying to Vercel
 
@@ -51,14 +66,15 @@ Get a free 24-hour dev key at <https://developer.riotgames.com>.
    - Framework: Vite
    - Build command: `npm run build`
    - Output directory: `dist`
-4. The `api/` directory is automatically picked up by Vercel as serverless
-   / edge functions — no extra config needed.
-5. (Optional) If you want the deployment to fall back to your own key when
-   a visitor hasn't supplied one, set it on the project:
+4. The `api/` directory is auto-detected by Vercel as serverless / edge
+   functions. `vercel.json` wires the multi-segment rewrite:
+   `/api/riot/{routing}/{...}` → `/api/riot?path={...}`.
+5. Add your Riot key as a project env var:
    ```bash
    vercel env add RIOT_API_KEY production
    ```
-   Otherwise the proxy returns `401 No Riot API key supplied`.
+   Without this set, the proxy returns 503 with a "temporarily
+   unavailable" message.
 
 Or from the repo root:
 
@@ -78,7 +94,7 @@ vercel deploy --prod
 ## Project layout
 
 ```
-api/riot/[...path].ts            # Vercel Edge Function (CORS proxy)
+api/riot.ts                      # Vercel Edge Function (CORS proxy)
 public/                          # Static assets (favicon, OG image, sitemap)
 src/
   components/
