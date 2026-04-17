@@ -9,7 +9,25 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-deep)' }}>
+    <div className="min-h-screen relative" style={{ backgroundColor: 'var(--color-bg-deep)' }}>
+      {/* Ambient warm glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 700, height: 700, top: '-15%', right: '-10%',
+            background: '#9f1239', opacity: 0.10, filter: 'blur(140px)',
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 560, height: 560, bottom: '-10%', left: '5%',
+            background: '#c2410c', opacity: 0.06, filter: 'blur(130px)',
+          }}
+        />
+      </div>
+
       {/* Desktop sidebar */}
       <Sidebar />
 
@@ -17,7 +35,7 @@ export function AppShell({ children }: AppShellProps) {
       <BottomNav />
 
       {/* Main content */}
-      <main className="md:pl-[200px] pb-20 md:pb-0 min-h-screen">
+      <main className="md:pl-[220px] pb-20 md:pb-0 min-h-screen relative z-10">
         {children ?? <Outlet />}
       </main>
     </div>

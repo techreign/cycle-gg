@@ -17,7 +17,7 @@ export function PhaseChip({ phase, size = 'md' }: PhaseChipProps) {
     return (
       <span
         className={`inline-flex items-center rounded-full font-medium ${SIZE_CLASSES[size]}`}
-        style={{ backgroundColor: 'rgba(148,163,184,0.15)', color: '#94a3b8' }}
+        style={{ backgroundColor: 'rgba(122, 97, 105, 0.15)', color: '#7a6169', border: '1px solid rgba(122,97,105,0.3)' }}
       >
         <span>?</span>
         <span>Unknown</span>
@@ -29,8 +29,12 @@ export function PhaseChip({ phase, size = 'md' }: PhaseChipProps) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full font-medium ${SIZE_CLASSES[size]}`}
-      style={{ backgroundColor: config.bgColor + '26', color: config.color }}
+      className={`inline-flex items-center rounded-full font-semibold ${SIZE_CLASSES[size]}`}
+      style={{
+        backgroundColor: config.color + '1f',
+        color: config.color,
+        border: `1px solid ${config.color}40`,
+      }}
     >
       <span>{config.emoji}</span>
       <span>{config.label}</span>

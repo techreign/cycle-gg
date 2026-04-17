@@ -3,14 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cycle.gg — Your Cycle, Your Meta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#e11d48" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Primary meta -->
+    <title>Cycle.gg — Does your period affect your LP?</title>
+    <meta name="description" content="Correlate your menstrual cycle with your League of Legends performance. Free, local-only cycle-aware match analytics. No account needed." />
+    <meta name="keywords" content="league of legends, period tracker, cycle tracker, gaming, LoL, menstrual cycle, performance analytics, MPPD" />
+    <meta name="author" content="Cycle.gg" />
+    <link rel="canonical" href="https://cycle.gg/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cycle.gg" />
+    <meta property="og:title" content="Cycle.gg — Does your period affect your LP?" />
+    <meta property="og:description" content="Cycle-aware League of Legends analytics. Discover your best phase, worst days, and champion picks — all stored locally in your browser." />
+    <meta property="og:image" content="/og-cycle-gg.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://cycle.gg/" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cycle.gg — cycle × league" />
+    <meta name="twitter:description" content="Track how your cycle shapes your LP. MPPD score, phase win rates, shareable insight cards." />
+    <meta name="twitter:image" content="/og-cycle-gg.svg" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Robots: allow indexing -->
+    <meta name="robots" content="index, follow" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding:2rem;color:#f8e4e7;font-family:system-ui,sans-serif;background:#110a0a;text-align:center">
+        Cycle.gg needs JavaScript to run. Please enable it or switch to a modern browser.
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

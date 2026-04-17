@@ -37,15 +37,15 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const d = payload[0].payload
 
   return (
-    <div className="glass-card" style={{ padding: '10px 14px', minWidth: 170 }}>
-      <p style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4 }}>{d.date}</p>
-      <p style={{ color: '#e2e8f0', fontWeight: 600, marginBottom: 4 }}>
-        {d.champion} — <span style={{ color: d.wins ? '#4ade80' : '#f87171' }}>{d.wins ? 'W' : 'L'}</span>
+    <div className="raised-surface px-3.5 py-2.5" style={{ minWidth: 170 }}>
+      <p className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{d.date}</p>
+      <p className="font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+        {d.champion} — <span style={{ color: d.wins ? '#34d399' : '#fb7185' }}>{d.wins ? 'W' : 'L'}</span>
       </p>
-      <p style={{ color: '#94a3b8', fontSize: 13 }}>
+      <p className="text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
         KDA: <span style={{ color: '#fff' }}>{d.kda.toFixed(2)}</span>
       </p>
-      <p style={{ color: d.phaseColor, fontSize: 12 }}>{d.phaseLabel}</p>
+      <p className="text-xs" style={{ color: d.phaseColor }}>{d.phaseLabel}</p>
     </div>
   )
 }
@@ -65,13 +65,12 @@ export function KdaTrendLine({ enrichedGames }: Props) {
       kda: Math.round(((g.kills + g.assists) / Math.max(g.deaths, 1)) * 100) / 100,
       phase: g.phase,
       phaseLabel: config?.label ?? 'Unknown',
-      phaseColor: config?.color ?? '#64748b',
+      phaseColor: config?.color ?? '#7a6169',
       champion: g.champion,
       wins: g.win,
     }
   })
 
-  // Build phase bands — group consecutive same-phase games
   const bands: { startIndex: number; endIndex: number; phase: string; color: string }[] = []
   let bandStart = 0
   let currentPhase = data[0].phase
@@ -88,36 +87,24 @@ export function KdaTrendLine({ enrichedGames }: Props) {
   bands.push({ startIndex: bandStart, endIndex: data.length - 1, phase: currentPhase, color: currentColor })
 
   return (
-    <div className="glass-card" style={{ padding: '20px 24px' }}>
-      <h3
-        style={{
-          color: '#e2e8f0',
-          fontWeight: 600,
-          fontSize: 16,
-          marginBottom: 20,
-        }}
-      >
-        KDA Trend
-      </h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
+    <div className="glass-card p-5">
+      <h3 className="section-heading">KDA Trend (last 30 games)</h3>
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#94a3b8', fontSize: 11 }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            tick={{ fill: '#cda3a9', fontSize: 10 }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: '#cda3a9', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1 }}
-          />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(251,113,133,0.25)', strokeWidth: 1 }} />
           {bands.map((band, i) => (
             <ReferenceArea
               key={i}
@@ -131,11 +118,11 @@ export function KdaTrendLine({ enrichedGames }: Props) {
           <Line
             type="monotone"
             dataKey="kda"
-            stroke="#ffffff"
-            strokeWidth={2}
-            dot={{ fill: '#ec4899', r: 3, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: '#ec4899', strokeWidth: 0 }}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(236, 72, 153, 0.6))' }}
+            stroke="#fb7185"
+            strokeWidth={2.5}
+            dot={{ fill: '#fb7185', r: 3, strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: '#fb7185', strokeWidth: 0 }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(251, 113, 133, 0.55))' }}
           />
         </LineChart>
       </ResponsiveContainer>

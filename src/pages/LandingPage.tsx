@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useRiotData } from '../hooks/useRiotData'
-import { useApp } from '../context/AppContext'
-import { REGIONS, type Region } from '../utils/riotApi'
+import { useApp } from '../hooks/useApp'
+import type { Region } from '../utils/riotApi'
 
 const REGION_OPTIONS: { value: Region; label: string }[] = [
   { value: 'NA', label: 'North America' },
@@ -33,8 +33,6 @@ export function LandingPage() {
   const [region, setRegion] = useState<Region>('NA')
   const [periodStart, setPeriodStart] = useState('')
   const [cycleLength, setCycleLength] = useState(28)
-
-  const selectedRegion = REGION_OPTIONS.find(r => r.value === region)!
 
   async function handleGo() {
     const parts = riotId.split('#')

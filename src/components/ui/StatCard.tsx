@@ -28,30 +28,22 @@ function TrendArrow({ trend }: { trend: 'up' | 'down' | 'neutral' }) {
       </span>
     )
   }
-  return (
-    <span className="text-slate-400 text-sm font-semibold flex items-center gap-0.5">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </svg>
-    </span>
-  )
+  return null
 }
 
 export function StatCard({ title, value, subtitle, trend, icon, className = '' }: StatCardProps) {
   return (
-    <div
-      className={`glass-card p-4 hover:border-white/20 transition-colors ${className}`}
-    >
+    <div className={`glass-card p-4 transition-all ${className}`}>
       <div className="flex items-start justify-between mb-2">
-        <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">{title}</span>
-        {icon && <span className="text-slate-400">{icon}</span>}
+        <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>{title}</span>
+        {icon && <span style={{ color: 'var(--color-text-muted)' }}>{icon}</span>}
       </div>
       <div className="flex items-end gap-2">
-        <span className="text-2xl font-bold text-white leading-none">{value}</span>
+        <span className="text-2xl font-black leading-none tracking-tight" style={{ color: 'var(--color-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
         {trend && <TrendArrow trend={trend} />}
       </div>
       {subtitle && (
-        <p className="text-xs text-slate-500 mt-1.5">{subtitle}</p>
+        <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-muted)' }}>{subtitle}</p>
       )}
     </div>
   )

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { createContext, useMemo, type ReactNode } from 'react'
 import type {
   PeriodEntry,
   GameEntry,
@@ -19,12 +19,9 @@ import {
 } from '../utils/analytics'
 import { getPhaseForDate, getCycleDayForDate } from '../utils/cycleEngine'
 
-interface AppContextValue {
+export interface AppContextValue {
   // Cycle data
   periods: PeriodEntry[]
-  addPeriod: (entry: Omit<PeriodEntry, 'id'>) => PeriodEntry
-  removePeriod: (id: string) => void
-  updatePeriod: (id: string, updates: Partial<Omit<PeriodEntry, 'id'>>) => void
   averageCycleLength: number
 
   // Cycle config
@@ -47,7 +44,8 @@ interface AppContextValue {
   currentCycleDay: number | null
 }
 
-const AppContext = createContext<AppContextValue | null>(null)
+// eslint-disable-next-line react-refresh/only-export-components
+export const AppContext = createContext<AppContextValue | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const cycleData = useCycleData()
@@ -87,9 +85,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: AppContextValue = {
     periods: cycleData.periods,
-    addPeriod: cycleData.addPeriod,
-    removePeriod: cycleData.removePeriod,
-    updatePeriod: cycleData.updatePeriod,
     averageCycleLength: cycleData.averageCycleLength,
 
     cycleConfig: cycleData.config,
@@ -110,12 +105,4 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
-}
-
-export function useApp(): AppContextValue {
-  const ctx = useContext(AppContext)
-  if (!ctx) {
-    throw new Error('useApp must be used within AppProvider')
-  }
-  return ctx
 }

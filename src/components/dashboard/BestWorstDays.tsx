@@ -17,44 +17,30 @@ function DayRow({
       ? PHASE_CONFIG[insight.phase as keyof typeof PHASE_CONFIG]
       : null
 
-  const accentColor = type === 'best' ? '#4ade80' : '#f87171'
+  const accentColor = type === 'best' ? '#34d399' : '#fb7185'
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '10px 0',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-b-0">
+      <div className="flex items-center gap-3">
         <span
+          className="inline-flex items-center justify-center rounded-full text-[13px] font-black"
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: `${accentColor}22`,
+            width: 32, height: 32,
+            background: accentColor + '22',
             color: accentColor,
-            fontSize: 13,
-            fontWeight: 700,
           }}
         >
           {insight.cycleDay}
         </span>
-        <span style={{ color: '#94a3b8', fontSize: 13 }}>
+        <span className="text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
           {config ? `${config.emoji} ${config.label}` : 'Unknown'}
         </span>
       </div>
-      <div style={{ textAlign: 'right' }}>
-        <span style={{ color: accentColor, fontWeight: 600, fontSize: 14 }}>
+      <div className="text-right">
+        <span className="text-sm font-bold" style={{ color: accentColor, fontVariantNumeric: 'tabular-nums' }}>
           {insight.avgWinRate.toFixed(0)}% WR
         </span>
-        <span style={{ color: '#475569', fontSize: 12, marginLeft: 6 }}>
+        <span className="text-xs ml-1.5" style={{ color: 'var(--color-text-faint)' }}>
           ({insight.sampleSize}g)
         </span>
       </div>
@@ -76,65 +62,34 @@ export function BestWorstDays({ bestWorstDays }: Props) {
   const isEmpty = bestWorstDays.length === 0
 
   return (
-    <div className="glass-card" style={{ padding: '20px 24px' }}>
-      <h3
-        style={{
-          color: '#e2e8f0',
-          fontWeight: 600,
-          fontSize: 16,
-          marginBottom: 20,
-        }}
-      >
-        Best &amp; Worst Days to Queue
-      </h3>
+    <div className="glass-card p-5">
+      <h3 className="section-heading">Best &amp; Worst Days to Queue</h3>
 
       {isEmpty ? (
-        <p style={{ color: '#64748b', fontSize: 14 }}>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
           Not enough data yet. Log more games across your cycle.
         </p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div className="flex flex-col gap-5">
           <div>
-            <p
-              style={{
-                color: '#4ade80',
-                fontSize: 12,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: 8,
-              }}
-            >
-              Best Days
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] mb-2" style={{ color: '#34d399' }}>
+              ↑ Best Days
             </p>
             {bestDays.length > 0 ? (
-              bestDays.map(d => (
-                <DayRow key={d.cycleDay} insight={d} type="best" />
-              ))
+              bestDays.map(d => <DayRow key={d.cycleDay} insight={d} type="best" />)
             ) : (
-              <p style={{ color: '#475569', fontSize: 13 }}>No standout days yet.</p>
+              <p className="text-[13px]" style={{ color: 'var(--color-text-faint)' }}>No standout days yet.</p>
             )}
           </div>
 
           <div>
-            <p
-              style={{
-                color: '#f87171',
-                fontSize: 12,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: 8,
-              }}
-            >
-              Worst Days
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] mb-2" style={{ color: '#fb7185' }}>
+              ↓ Worst Days
             </p>
             {worstDays.length > 0 ? (
-              worstDays.map(d => (
-                <DayRow key={d.cycleDay} insight={d} type="worst" />
-              ))
+              worstDays.map(d => <DayRow key={d.cycleDay} insight={d} type="worst" />)
             ) : (
-              <p style={{ color: '#475569', fontSize: 13 }}>No bad days yet.</p>
+              <p className="text-[13px]" style={{ color: 'var(--color-text-faint)' }}>No bad days yet.</p>
             )}
           </div>
         </div>

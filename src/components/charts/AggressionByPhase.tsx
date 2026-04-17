@@ -36,15 +36,14 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const d = payload[0].payload
 
   return (
-    <div className="glass-card" style={{ padding: '10px 14px', minWidth: 180 }}>
-      <p style={{ color: '#e2e8f0', fontWeight: 600, marginBottom: 4 }}>
+    <div className="raised-surface px-3.5 py-2.5" style={{ minWidth: 180 }}>
+      <p className="font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
         {d.emoji} {d.label}
       </p>
-      <p style={{ color: '#94a3b8', fontSize: 13 }}>
-        Aggression:{' '}
-        <span style={{ color: '#fff' }}>{d.aggressionScore.toFixed(2)} / 10</span>
+      <p className="text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
+        Aggression: <span style={{ color: '#fff' }}>{d.aggressionScore.toFixed(2)} / 10</span>
       </p>
-      <p style={{ color: '#94a3b8', fontSize: 13 }}>
+      <p className="text-[13px]" style={{ color: 'var(--color-text-secondary)' }}>
         Games: <span style={{ color: '#fff' }}>{d.games}</span>
       </p>
     </div>
@@ -68,50 +67,38 @@ export function AggressionByPhase({ phaseStats }: Props) {
     })
 
   return (
-    <div className="glass-card" style={{ padding: '20px 24px' }}>
-      <h3
-        style={{
-          color: '#e2e8f0',
-          fontWeight: 600,
-          fontSize: 16,
-          marginBottom: 20,
-        }}
-      >
-        Aggression by Phase
-      </h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
+    <div className="glass-card p-5">
+      <h3 className="section-heading">Aggression by Phase</h3>
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
           <XAxis
             dataKey="xLabel"
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            tick={{ fill: '#cda3a9', fontSize: 11 }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
             tickLine={false}
           />
           <YAxis
             domain={[0, 10]}
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: '#cda3a9', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-          />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(251, 113, 133, 0.06)' }} />
           <ReferenceLine
             y={8.6}
-            stroke="#f43f5e"
+            stroke="#e11d48"
             strokeDasharray="6 3"
             label={{
               value: 'Bwipo Line',
               position: 'right',
-              fill: '#f43f5e',
+              fill: '#e11d48',
               fontSize: 11,
             }}
           />
-          <Bar dataKey="aggressionScore" radius={[6, 6, 0, 0]}>
+          <Bar dataKey="aggressionScore" radius={[8, 8, 0, 0]}>
             {data.map((entry) => (
-              <Cell key={entry.phase} fill={entry.color} fillOpacity={0.85} />
+              <Cell key={entry.phase} fill={entry.color} fillOpacity={0.9} />
             ))}
           </Bar>
         </BarChart>

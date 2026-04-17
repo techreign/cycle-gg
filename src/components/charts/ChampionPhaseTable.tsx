@@ -19,16 +19,13 @@ const KNOWN_PHASES: Exclude<CyclePhase, 'unknown'>[] = ['menstrual', 'follicular
 export function ChampionPhaseTable({ enrichedGames }: Props) {
   if (enrichedGames.length === 0) {
     return (
-      <div className="glass-card" style={{ padding: '20px 24px' }}>
-        <h3 style={{ color: '#e2e8f0', fontWeight: 600, fontSize: 16, marginBottom: 12 }}>
-          Champion Performance
-        </h3>
-        <p style={{ color: '#64748b', fontSize: 14 }}>No games logged yet.</p>
+      <div className="glass-card p-5">
+        <h3 className="section-heading">Champion Performance</h3>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No games logged yet.</p>
       </div>
     )
   }
 
-  // Group by champion
   const championMap = new Map<string, ChampionRow>()
 
   for (const game of enrichedGames) {
@@ -58,74 +55,25 @@ export function ChampionPhaseTable({ enrichedGames }: Props) {
     .slice(0, 10)
 
   return (
-    <div className="glass-card" style={{ padding: '20px 24px' }}>
-      <h3
-        style={{
-          color: '#e2e8f0',
-          fontWeight: 600,
-          fontSize: 16,
-          marginBottom: 20,
-        }}
-      >
-        Champion Performance
-      </h3>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+    <div className="glass-card p-5">
+      <h3 className="section-heading">Champion Performance</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '8px 12px',
-                  color: '#64748b',
-                  fontWeight: 500,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
+              <th className="text-left py-2 px-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 Champion
               </th>
-              <th
-                style={{
-                  textAlign: 'right',
-                  padding: '8px 12px',
-                  color: '#64748b',
-                  fontWeight: 500,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
+              <th className="text-right py-2 px-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 Games
               </th>
-              <th
-                style={{
-                  textAlign: 'right',
-                  padding: '8px 12px',
-                  color: '#64748b',
-                  fontWeight: 500,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
+              <th className="text-right py-2 px-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 Win Rate
               </th>
-              <th
-                style={{
-                  textAlign: 'right',
-                  padding: '8px 12px',
-                  color: '#64748b',
-                  fontWeight: 500,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
+              <th className="text-right py-2 px-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 Avg KDA
               </th>
-              <th
-                style={{
-                  textAlign: 'center',
-                  padding: '8px 12px',
-                  color: '#64748b',
-                  fontWeight: 500,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
+              <th className="text-center py-2 px-3 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 Phases
               </th>
             </tr>
@@ -134,64 +82,29 @@ export function ChampionPhaseTable({ enrichedGames }: Props) {
             {rows.map((row) => (
               <tr
                 key={row.champion}
-                style={{ transition: 'background 0.15s' }}
-                onMouseEnter={e => {
-                  ;(e.currentTarget as HTMLTableRowElement).style.background =
-                    'rgba(255,255,255,0.04)'
-                }}
-                onMouseLeave={e => {
-                  ;(e.currentTarget as HTMLTableRowElement).style.background = 'transparent'
-                }}
+                className="transition-colors hover:bg-white/[0.03]"
               >
-                <td
-                  style={{
-                    padding: '10px 12px',
-                    color: '#e2e8f0',
-                    fontWeight: 500,
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                  }}
-                >
+                <td className="py-2.5 px-3 font-semibold" style={{ color: 'var(--color-text-primary)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   {row.champion}
                 </td>
-                <td
-                  style={{
-                    padding: '10px 12px',
-                    textAlign: 'right',
-                    color: '#94a3b8',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                  }}
-                >
+                <td className="py-2.5 px-3 text-right" style={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.04)', fontVariantNumeric: 'tabular-nums' }}>
                   {row.games}
                 </td>
                 <td
+                  className="py-2.5 px-3 text-right font-bold"
                   style={{
-                    padding: '10px 12px',
-                    textAlign: 'right',
-                    color: row.winRate >= 50 ? '#4ade80' : '#f87171',
-                    fontWeight: 600,
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    color: row.winRate >= 50 ? '#34d399' : '#fb7185',
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {row.winRate.toFixed(0)}%
                 </td>
-                <td
-                  style={{
-                    padding: '10px 12px',
-                    textAlign: 'right',
-                    color: '#94a3b8',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                  }}
-                >
+                <td className="py-2.5 px-3 text-right" style={{ color: 'var(--color-text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.04)', fontVariantNumeric: 'tabular-nums' }}>
                   {row.avgKDA.toFixed(2)}
                 </td>
-                <td
-                  style={{
-                    padding: '10px 12px',
-                    textAlign: 'center',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                  }}
-                >
-                  <span style={{ display: 'inline-flex', gap: 4 }}>
+                <td className="py-2.5 px-3 text-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <span className="inline-flex gap-1">
                     {KNOWN_PHASES.map(phase => {
                       const count = row.phaseCounts[phase] ?? 0
                       if (count === 0) return null
@@ -200,17 +113,11 @@ export function ChampionPhaseTable({ enrichedGames }: Props) {
                         <span
                           key={phase}
                           title={`${config.label}: ${count} games`}
+                          className="inline-flex items-center justify-center rounded-full text-[10px] font-bold"
                           style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: 20,
-                            height: 20,
-                            borderRadius: '50%',
+                            width: 20, height: 20,
                             background: config.color,
                             color: '#fff',
-                            fontSize: 10,
-                            fontWeight: 700,
                           }}
                         >
                           {count}

@@ -1,0 +1,2 @@
+# SPA fallback — every non-asset path renders the React app.
+/*    /index.html   200

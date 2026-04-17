@@ -8,8 +8,8 @@ export const PHASE_CONFIG: Record<Exclude<CyclePhase, 'unknown'>, {
   days: string
   description: string
 }> = {
-  menstrual: { label: 'Menstrual', color: '#f43f5e', bgColor: '#fff1f2', emoji: '🌑', days: '1–5', description: 'Flow phase' },
-  follicular: { label: 'Follicular', color: '#a855f7', bgColor: '#faf5ff', emoji: '🌒', days: '6–13', description: 'Rising energy' },
-  ovulation: { label: 'Ovulation', color: '#ec4899', bgColor: '#fdf4ff', emoji: '🌕', days: '14–16', description: 'Peak power' },
-  luteal: { label: 'Luteal', color: '#8b5cf6', bgColor: '#f5f3ff', emoji: '🌗', days: '17–28', description: 'Wind down' },
+  menstrual:  { label: 'Menstrual',  color: '#dc2626', bgColor: '#dc2626', emoji: '🩸', days: '1–5',   description: 'Flow phase' },
+  follicular: { label: 'Follicular', color: '#f59e0b', bgColor: '#f59e0b', emoji: '🌅', days: '6–13',  description: 'Rising energy' },
+  ovulation:  { label: 'Ovulation',  color: '#fb7185', bgColor: '#fb7185', emoji: '🌕', days: '14–16', description: 'Peak power' },
+  luteal:     { label: 'Luteal',     color: '#9f1239', bgColor: '#9f1239', emoji: '🌑', days: '17–28', description: 'Wind down' },
 }

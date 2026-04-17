@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <radialGradient id="bg" cx="20%" cy="30%" r="95%">
+      <stop offset="0%" stop-color="#2a0d13"/>
+      <stop offset="60%" stop-color="#1a0a0d"/>
+      <stop offset="100%" stop-color="#0c0607"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="85%" cy="20%" r="55%">
+      <stop offset="0%" stop-color="#e11d4866"/>
+      <stop offset="100%" stop-color="#e11d4800"/>
+    </radialGradient>
+    <linearGradient id="logo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fb7185"/>
+      <stop offset="55%" stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#9f1239"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <text x="60" y="180" font-size="148" font-weight="900" fill="url(#logo)">Cycle</text>
+  <text x="495" y="180" font-size="148" font-weight="900" fill="#ffffff">.gg</text>
+  <text x="60" y="240" font-size="34" font-weight="500" fill="#cda3a9">does your period affect your LP?</text>
+  <text x="60" y="390" font-size="28" font-weight="700" fill="#fb7185" letter-spacing="4">YOUR CYCLE × LEAGUE STATS</text>
+  <text x="60" y="462" font-size="56" font-weight="800" fill="#f8e4e7">Track phases. Spot patterns.</text>
+  <text x="60" y="528" font-size="56" font-weight="800" fill="#f8e4e7">Play to your meta.</text>
+  <text x="60" y="590" font-size="22" font-weight="500" fill="#7a6169">free · local-only · not affiliated with Riot Games</text>
+</svg>

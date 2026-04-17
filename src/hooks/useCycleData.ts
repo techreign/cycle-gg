@@ -11,7 +11,7 @@ import { generatePeriods } from '../utils/cycleGenerator'
 export function useCycleData() {
   const [config, setConfig] = useState<CycleConfig | null>(() => getCycleConfig())
 
-  // Generate periods from config instead of reading them individually
+  // Periods are derived from the cycle config — 8 cycles back + 3 predicted forward.
   const periods = useMemo<PeriodEntry[]>(() => {
     if (!config) return []
     return generatePeriods(config)
@@ -27,20 +27,6 @@ export function useCycleData() {
     setConfig(null)
   }, [])
 
-  // Keep the old interface working for backward compatibility.
-  // Generated periods are derived from config, so individual add/remove/update
-  // are no-ops — the setup page manages config as a whole.
-  const addPeriod = useCallback((_entry: Omit<PeriodEntry, 'id'>): PeriodEntry => {
-    return { id: 'noop', startDate: '', endDate: null }
-  }, [])
-
-  const removePeriod = useCallback((_id: string): void => {}, [])
-
-  const updatePeriod = useCallback(
-    (_id: string, _updates: Partial<Omit<PeriodEntry, 'id'>>): void => {},
-    []
-  )
-
   const averageCycleLength = config?.cycleLength ?? 28
 
   return {
@@ -48,9 +34,6 @@ export function useCycleData() {
     config,
     updateCycleConfig,
     clearConfig,
-    addPeriod,
-    removePeriod,
-    updatePeriod,
     averageCycleLength,
   }
 }

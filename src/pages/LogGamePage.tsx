@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApp } from '../context/AppContext'
+import { useApp } from '../hooks/useApp'
 import { PhaseChip } from '../components/ui/PhaseChip'
 import { Button } from '../components/ui/Button'
 import type { CyclePhase } from '../types'
@@ -97,11 +97,11 @@ export function LogGamePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Page Header */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-8 fade-up">
         <div>
-          <h1 className="text-2xl font-black text-white">Log a Game</h1>
-          <p className="text-slate-400 text-sm mt-0.5">
-            Games are tagged with your current cycle phase
+          <h1 className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Log a Game</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+            Games are tagged with your current cycle phase.
           </p>
         </div>
         <div className="ml-auto">
@@ -128,14 +128,12 @@ export function LogGamePage() {
       )}
 
       {/* Game Form */}
-      <form onSubmit={handleSubmit} className="glass-card p-6 mb-8">
-        <h2 className="text-lg font-bold text-white mb-6">Game Details</h2>
+      <form onSubmit={handleSubmit} className="glass-card p-6 mb-8 fade-up-2">
+        <h2 className="section-heading">Game Details</h2>
 
         {/* Win / Loss Toggle */}
         <div className="mb-6">
-          <label className="block text-xs text-slate-400 font-medium mb-3 uppercase tracking-wide">
-            Result
-          </label>
+          <label className="field-label">Result</label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -143,9 +141,10 @@ export function LogGamePage() {
               className={[
                 'py-4 rounded-xl text-lg font-black tracking-wide transition-all border-2',
                 form.win === true
-                  ? 'bg-emerald-500/30 border-emerald-400 text-emerald-300'
-                  : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300',
+                  ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300'
+                  : 'border-white/10 hover:border-white/20',
               ].join(' ')}
+              style={form.win === true ? undefined : { color: 'var(--color-text-muted)' }}
             >
               WIN
             </button>
@@ -155,9 +154,10 @@ export function LogGamePage() {
               className={[
                 'py-4 rounded-xl text-lg font-black tracking-wide transition-all border-2',
                 form.win === false
-                  ? 'bg-rose-500/30 border-rose-400 text-rose-300'
-                  : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300',
+                  ? 'bg-rose-500/20 border-rose-400 text-rose-300'
+                  : 'border-white/10 hover:border-white/20',
               ].join(' ')}
+              style={form.win === false ? undefined : { color: 'var(--color-text-muted)' }}
             >
               LOSS
             </button>
@@ -166,35 +166,31 @@ export function LogGamePage() {
 
         {/* Champion */}
         <div className="mb-5">
-          <label className="block text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">
-            Champion
-          </label>
+          <label className="field-label">Champion</label>
           <input
             type="text"
             value={form.champion}
             onChange={(e) => setForm((f) => ({ ...f, champion: e.target.value }))}
             placeholder="e.g. Tristana"
-            className="w-full px-3 py-3 rounded-lg text-sm text-white placeholder-slate-600 bg-white/5 border border-white/10 focus:outline-none focus:border-pink-400/50 transition-all"
+            className="field"
           />
         </div>
 
         {/* Role */}
         <div className="mb-5">
-          <label className="block text-xs text-slate-400 font-medium mb-3 uppercase tracking-wide">
-            Role
-          </label>
+          <label className="field-label">Role</label>
           <div className="flex gap-2 flex-wrap">
             {ROLES.map((role) => (
               <button
                 key={role}
                 type="button"
                 onClick={() => setForm((f) => ({ ...f, role }))}
-                className={[
-                  'flex-1 min-w-[80px] py-2.5 rounded-lg text-sm font-medium transition-all border',
+                className="flex-1 min-w-[80px] py-2.5 rounded-lg text-sm font-semibold transition-all border"
+                style={
                   form.role === role
-                    ? 'bg-violet-500/30 border-violet-400 text-violet-300'
-                    : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300',
-                ].join(' ')}
+                    ? { background: 'rgba(251, 113, 133, 0.18)', borderColor: '#fb7185', color: '#fb7185' }
+                    : { borderColor: 'rgba(255,255,255,0.1)', color: 'var(--color-text-muted)' }
+                }
               >
                 <span className="mr-1">{ROLE_ICONS[role]}</span>
                 {role}
@@ -205,9 +201,7 @@ export function LogGamePage() {
 
         {/* KDA */}
         <div className="mb-5">
-          <label className="block text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">
-            KDA
-          </label>
+          <label className="field-label">KDA</label>
           <div className="grid grid-cols-3 gap-3">
             {(['kills', 'deaths', 'assists'] as const).map((stat) => (
               <div key={stat}>
@@ -217,9 +211,9 @@ export function LogGamePage() {
                   value={form[stat]}
                   onChange={(e) => setForm((f) => ({ ...f, [stat]: e.target.value }))}
                   placeholder="0"
-                  className="w-full px-3 py-3 rounded-lg text-sm text-white text-center placeholder-slate-600 bg-white/5 border border-white/10 focus:outline-none focus:border-pink-400/50 transition-all"
+                  className="field text-center"
                 />
-                <p className="text-center text-xs text-slate-500 mt-1 capitalize">{stat}</p>
+                <p className="text-center text-xs mt-1 capitalize" style={{ color: 'var(--color-text-muted)' }}>{stat}</p>
               </div>
             ))}
           </div>
@@ -227,9 +221,8 @@ export function LogGamePage() {
 
         {/* Damage */}
         <div className="mb-5">
-          <label className="block text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">
-            Damage Dealt{' '}
-            <span className="text-slate-600 normal-case">(optional)</span>
+          <label className="field-label">
+            Damage Dealt <span className="normal-case" style={{ color: 'var(--color-text-faint)' }}>(optional)</span>
           </label>
           <input
             type="number"
@@ -237,30 +230,29 @@ export function LogGamePage() {
             value={form.damage}
             onChange={(e) => setForm((f) => ({ ...f, damage: e.target.value }))}
             placeholder="e.g. 25000"
-            className="w-full px-3 py-3 rounded-lg text-sm text-white placeholder-slate-600 bg-white/5 border border-white/10 focus:outline-none focus:border-pink-400/50 transition-all"
+            className="field"
           />
         </div>
 
         {/* Notes */}
         <div className="mb-6">
-          <label className="block text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">
-            Notes{' '}
-            <span className="text-slate-600 normal-case">(optional)</span>
+          <label className="field-label">
+            Notes <span className="normal-case" style={{ color: 'var(--color-text-faint)' }}>(optional)</span>
           </label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             placeholder="How did you feel? Any tilt? Unusual focus?"
             rows={3}
-            className="w-full px-3 py-3 rounded-lg text-sm text-white placeholder-slate-600 bg-white/5 border border-white/10 focus:outline-none focus:border-pink-400/50 transition-all resize-none"
+            className="field resize-none"
           />
         </div>
 
         {/* Validation Errors */}
         {errors.length > 0 && (
-          <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20">
+          <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(225,29,72,0.08)', border: '1px solid rgba(225,29,72,0.25)' }}>
             {errors.map((err) => (
-              <p key={err} className="text-rose-400 text-sm">{err}</p>
+              <p key={err} className="text-sm" style={{ color: '#fb7185' }}>{err}</p>
             ))}
           </div>
         )}
@@ -272,10 +264,10 @@ export function LogGamePage() {
 
       {/* Recent Games */}
       <div>
-        <h2 className="text-lg font-bold text-white mb-4">Recent Games</h2>
+        <h2 className="section-heading">Recent Games</h2>
 
         {recentGames.length === 0 ? (
-          <div className="glass-card p-8 text-center text-slate-500 text-sm">
+          <div className="glass-card p-8 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             No games logged yet. Log your first game above.
           </div>
         ) : (
@@ -305,13 +297,13 @@ export function LogGamePage() {
 
                   {/* Champion + date */}
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white font-semibold truncate">
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>
                       {game.champion || '—'}
                       {game.role && (
-                        <span className="ml-2 text-xs text-slate-500">{game.role}</span>
+                        <span className="ml-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>{game.role}</span>
                       )}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                       {formatDate(game.date)} · KDA {kda}
                       {game.damageDealt > 0 && ` · ${(game.damageDealt / 1000).toFixed(1)}k dmg`}
                     </p>
@@ -323,7 +315,8 @@ export function LogGamePage() {
                   {/* Delete */}
                   <button
                     onClick={() => removeGame(game.id)}
-                    className="shrink-0 p-2 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                    className="shrink-0 p-2 rounded-lg transition-all hover:bg-rose-500/10"
+                    style={{ color: 'var(--color-text-muted)' }}
                     aria-label="Delete game"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

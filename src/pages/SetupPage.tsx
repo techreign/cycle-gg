@@ -1,43 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
+import { useApp } from '../hooks/useApp'
 import { useRiotData } from '../hooks/useRiotData'
 import { Button } from '../components/ui/Button'
 import type { Region } from '../utils/riotApi'
-import { REGIONS } from '../utils/riotApi'
+import { REGIONS, getUserRiotKey } from '../utils/riotApi'
 
 const REGION_OPTIONS = Object.keys(REGIONS) as Region[]
 
-const inputClass =
-  'w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-slate-600 bg-white/5 border border-white/10 focus:outline-none focus:border-violet-400/50 transition-all'
-
-const labelClass = 'block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide'
+const inputClass = 'field'
+const labelClass = 'field-label'
 
 export function SetupPage() {
   const { cycleConfig, updateCycleConfig, games, setGames: setContextGames } = useApp()
   const riot = useRiotData()
+  const hasRiotKey = getUserRiotKey() !== null
 
   // ─── Riot form state ─────────────────────────────────────────────────────
   const [gameName, setGameName] = useState('')
   const [tagLine, setTagLine] = useState('')
   const [region, setRegion] = useState<Region>('NA')
 
-  // ─── Cycle form state ────────────────────────────────────────────────────
-  const [lastPeriodStart, setLastPeriodStart] = useState(
-    cycleConfig?.lastPeriodStart ?? ''
-  )
+  // ─── Cycle form state — initialized from config, reset via key prop ─────
+  const [lastPeriodStart, setLastPeriodStart] = useState(cycleConfig?.lastPeriodStart ?? '')
   const [cycleLength, setCycleLength] = useState(cycleConfig?.cycleLength ?? 28)
   const [periodDuration, setPeriodDuration] = useState(cycleConfig?.periodDuration ?? 5)
   const [cycleSaved, setCycleSaved] = useState(false)
-
-  // Sync form when config changes externally
-  useEffect(() => {
-    if (cycleConfig) {
-      setLastPeriodStart(cycleConfig.lastPeriodStart)
-      setCycleLength(cycleConfig.cycleLength)
-      setPeriodDuration(cycleConfig.periodDuration)
-    }
-  }, [cycleConfig])
 
   // ─── Riot: Connect via real API ──────────────────────────────────────────
   async function handleRiotConnect() {
@@ -91,19 +79,30 @@ export function SetupPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-black text-white">Setup</h1>
-        <p className="text-slate-400 text-sm mt-0.5">
+      <div className="mb-8 fade-up">
+        <h1 className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Setup</h1>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
           Connect your account and configure your cycle to get started.
         </p>
       </div>
 
       {/* ─── Section 1: Connect Your Account ─────────────────────────────── */}
       <section className="glass-card p-6 mb-5">
-        <h2 className="text-base font-bold text-white mb-1">Connect Your League Account</h2>
-        <p className="text-slate-500 text-sm mb-5">
+        <h2 className="text-base font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>Connect Your League Account</h2>
+        <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
           Enter your Riot ID to auto-pull match history.
         </p>
+
+        {!hasRiotKey && !riot.isConnected && (
+          <div className="mb-4 px-4 py-3 rounded-lg text-sm flex items-start gap-2" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', color: '#f59e0b' }}>
+            <span>⚠</span>
+            <span>
+              Add your Riot developer key in{' '}
+              <Link to="/settings" className="underline font-semibold">Settings</Link>{' '}
+              first — Cycle.gg uses your own key so nothing leaves your browser.
+            </span>
+          </div>
+        )}
 
         {riot.isConnected && riot.riotConfig ? (
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -114,11 +113,11 @@ export function SetupPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
                   {riot.riotConfig.gameName}
-                  <span className="text-slate-400 font-normal">#{riot.riotConfig.tagLine}</span>
+                  <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>#{riot.riotConfig.tagLine}</span>
                 </p>
-                <p className="text-xs text-slate-500">{riot.riotConfig.region} region</p>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{riot.riotConfig.region} region</p>
               </div>
             </div>
             <Button variant="danger" size="sm" onClick={handleRiotDisconnect}>
@@ -128,7 +127,7 @@ export function SetupPage() {
         ) : (
           <div className="space-y-4">
             {riot.error && (
-              <div className="px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm">
+              <div className="px-4 py-3 rounded-lg text-sm" style={{ background: 'rgba(225,29,72,0.1)', border: '1px solid rgba(225,29,72,0.3)', color: '#fb7185' }}>
                 {riot.error}
               </div>
             )}
@@ -168,7 +167,7 @@ export function SetupPage() {
                 disabled={riot.isLoading}
               >
                 {REGION_OPTIONS.map((r) => (
-                  <option key={r} value={r} className="bg-slate-900 text-white">
+                  <option key={r} value={r} style={{ backgroundColor: '#1f1215', color: '#f8e4e7' }}>
                     {r}
                   </option>
                 ))}
@@ -187,13 +186,16 @@ export function SetupPage() {
             {/* Progress bar during initial connect+fetch */}
             {riot.isLoading && riot.progress && (
               <div className="space-y-2">
-                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
                   <div
-                    className="h-full bg-gradient-to-r from-pink-500 to-violet-500 rounded-full transition-all duration-300"
-                    style={{ width: `${riot.progress.total > 0 ? (riot.progress.current / riot.progress.total) * 100 : 0}%` }}
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${riot.progress.total > 0 ? (riot.progress.current / riot.progress.total) * 100 : 0}%`,
+                      background: 'linear-gradient(90deg, #fb7185, #e11d48)',
+                    }}
                   />
                 </div>
-                <p className="text-xs text-slate-500 text-center">
+                <p className="text-xs text-center" style={{ color: 'var(--color-text-muted)' }}>
                   Fetching match {riot.progress.current} of {riot.progress.total}...
                 </p>
               </div>
@@ -204,13 +206,13 @@ export function SetupPage() {
 
       {/* ─── Section 2: Your Cycle ────────────────────────────────────────── */}
       <section className="glass-card p-6 mb-5">
-        <h2 className="text-base font-bold text-white mb-1">Set Your Cycle</h2>
-        <p className="text-slate-500 text-sm mb-5">
+        <h2 className="text-base font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>Set Your Cycle</h2>
+        <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
           We'll use this to map your cycle phases to your game history going back ~6 months.
         </p>
 
         {cycleSaved && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm font-medium">
+          <div className="mb-4 px-4 py-3 rounded-lg text-sm font-medium" style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', color: '#34d399' }}>
             Cycle saved! Periods generated automatically.
           </div>
         )}
@@ -242,9 +244,9 @@ export function SetupPage() {
                   }}
                   className={inputClass}
                 />
-                <span className="text-slate-500 text-sm whitespace-nowrap">days</span>
+                <span className="text-sm whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>days</span>
               </div>
-              <p className="text-xs text-slate-600 mt-1">Range: 21–35</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>Range: 21–35</p>
             </div>
             <div className="flex-1">
               <label className={labelClass}>Period duration</label>
@@ -260,9 +262,9 @@ export function SetupPage() {
                   }}
                   className={inputClass}
                 />
-                <span className="text-slate-500 text-sm whitespace-nowrap">days</span>
+                <span className="text-sm whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>days</span>
               </div>
-              <p className="text-xs text-slate-600 mt-1">Range: 3–7</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-text-faint)' }}>Range: 3–7</p>
             </div>
           </div>
 
@@ -277,8 +279,8 @@ export function SetupPage() {
         </div>
 
         {cycleConfig && (
-          <p className="text-xs text-slate-500 mt-4">
-            Currently set: last period started <span className="text-slate-300">{cycleConfig.lastPeriodStart}</span>,
+          <p className="text-xs mt-4" style={{ color: 'var(--color-text-muted)' }}>
+            Currently set: last period started <span style={{ color: 'var(--color-text-secondary)' }}>{cycleConfig.lastPeriodStart}</span>,
             {' '}{cycleConfig.cycleLength}-day cycle, {cycleConfig.periodDuration}-day duration.
           </p>
         )}
@@ -287,27 +289,29 @@ export function SetupPage() {
       {/* ─── Section 3: Match History ─────────────────────────────────────── */}
       {bothConfigured && (
         <section className="glass-card p-6">
-          <h2 className="text-base font-bold text-white mb-1">Match History</h2>
-          <p className="text-slate-500 text-sm mb-5">
+          <h2 className="text-base font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>Match History</h2>
+          <p className="text-sm mb-5" style={{ color: 'var(--color-text-muted)' }}>
             Fetch your recent games to see how your cycle affects your performance.
           </p>
 
           {riot.error && (
-            <div className="mb-4 px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm">
+            <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: 'rgba(225,29,72,0.1)', border: '1px solid rgba(225,29,72,0.3)', color: '#fb7185' }}>
               {riot.error}
             </div>
           )}
 
-          {/* Progress bar */}
           {riot.isLoading && riot.progress && (
             <div className="mb-4 space-y-2">
-              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+              <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
                 <div
-                  className="h-full bg-gradient-to-r from-pink-500 to-violet-500 rounded-full transition-all duration-300"
-                  style={{ width: `${riot.progress.total > 0 ? (riot.progress.current / riot.progress.total) * 100 : 0}%` }}
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${riot.progress.total > 0 ? (riot.progress.current / riot.progress.total) * 100 : 0}%`,
+                    background: 'linear-gradient(90deg, #fb7185, #e11d48)',
+                  }}
                 />
               </div>
-              <p className="text-xs text-slate-500 text-center">
+              <p className="text-xs text-center" style={{ color: 'var(--color-text-muted)' }}>
                 Fetching match {riot.progress.current} of {riot.progress.total}...
               </p>
             </div>
@@ -315,14 +319,14 @@ export function SetupPage() {
 
           {games.length > 0 ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-violet-500/10 border border-violet-500/20">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-400 flex-shrink-0">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: 'rgba(251,113,133,0.08)', border: '1px solid rgba(251,113,133,0.2)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#fb7185' }} className="flex-shrink-0">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <p className="text-sm text-slate-300">
-                  <span className="font-semibold text-white">{games.length} games</span> loaded.
+                <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{games.length} games</span> loaded.
                   {riot.lastFetchTime && (
-                    <span className="text-slate-500">
+                    <span style={{ color: 'var(--color-text-muted)' }}>
                       {' '}Last updated: {new Date(riot.lastFetchTime).toLocaleDateString()}
                     </span>
                   )}
@@ -331,7 +335,7 @@ export function SetupPage() {
               <div className="flex gap-3 flex-col sm:flex-row">
                 <Link
                   to="/dashboard"
-                  className="flex-1 inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-gradient-to-r from-pink-500 to-violet-500 text-white hover:from-pink-400 hover:to-violet-400 transition-all"
+                  className="btn-rose-gradient flex-1 inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg"
                 >
                   View Dashboard
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2">
@@ -366,7 +370,7 @@ export function SetupPage() {
       )}
 
       {!bothConfigured && (
-        <p className="text-xs text-slate-600 text-center mt-2">
+        <p className="text-xs text-center mt-2" style={{ color: 'var(--color-text-faint)' }}>
           Complete both sections above to unlock match history fetching.
         </p>
       )}

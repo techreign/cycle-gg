@@ -36,52 +36,79 @@ export interface RiotMatch {
 // ---------------------------------------------------------------------------
 
 export const REGIONS = {
-  'NA': 'americas',
-  'BR': 'americas',
-  'LAN': 'americas',
-  'LAS': 'americas',
-  'OCE': 'sea',
-  'PH': 'sea',
-  'SG': 'sea',
-  'TH': 'sea',
-  'TW': 'sea',
-  'VN': 'sea',
-  'JP': 'asia',
-  'KR': 'asia',
-  'EUW': 'europe',
-  'EUNE': 'europe',
-  'TR': 'europe',
-  'RU': 'europe',
-  'ME': 'europe',
+  NA: 'americas',
+  BR: 'americas',
+  LAN: 'americas',
+  LAS: 'americas',
+  OCE: 'sea',
+  PH: 'sea',
+  SG: 'sea',
+  TH: 'sea',
+  TW: 'sea',
+  VN: 'sea',
+  JP: 'asia',
+  KR: 'asia',
+  EUW: 'europe',
+  EUNE: 'europe',
+  TR: 'europe',
+  RU: 'europe',
+  ME: 'europe',
 } as const
 
 export type Region = keyof typeof REGIONS
 export type RoutingRegion = (typeof REGIONS)[Region]
 
 // ---------------------------------------------------------------------------
+// Key storage (user-supplied, kept in localStorage)
+// ---------------------------------------------------------------------------
+
+const RIOT_KEY_STORAGE = 'cycle_gg_riot_api_key'
+
+export function getUserRiotKey(): string | null {
+  try {
+    return localStorage.getItem(RIOT_KEY_STORAGE)
+  } catch {
+    return null
+  }
+}
+
+export function setUserRiotKey(key: string): void {
+  localStorage.setItem(RIOT_KEY_STORAGE, key.trim())
+}
+
+export function clearUserRiotKey(): void {
+  localStorage.removeItem(RIOT_KEY_STORAGE)
+}
+
+export class MissingRiotKeyError extends Error {
+  constructor() {
+    super('Add your Riot developer API key in Settings to connect.')
+    this.name = 'MissingRiotKeyError'
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Internal fetch helpers
 // ---------------------------------------------------------------------------
 
-function getApiKey(): string {
-  const key = import.meta.env.VITE_RIOT_API_KEY
-  if (!key) throw new Error('VITE_RIOT_API_KEY not set in .env')
-  return key
-}
-
 async function riotFetch(url: string, retries = 3): Promise<Response> {
+  const key = getUserRiotKey()
+  if (!key) throw new MissingRiotKeyError()
+
   const res = await fetch(url, {
-    headers: { 'X-Riot-Token': getApiKey() },
+    headers: { 'X-Riot-Token': key },
   })
   if (!res.ok) {
     if (res.status === 429 && retries > 0) {
-      // Read Retry-After header, default to 10s
       const retryAfter = Number(res.headers.get('Retry-After') || '10')
       const waitMs = (retryAfter + 1) * 1000
       await new Promise(r => setTimeout(r, waitMs))
       return riotFetch(url, retries - 1)
     }
     if (res.status === 429) throw new Error('Rate limited. Please wait a couple minutes and try again.')
-    if (res.status === 403) throw new Error('Invalid or expired API key. Get a new one from developer.riotgames.com')
+    if (res.status === 401 || res.status === 403) {
+      throw new Error('Invalid or expired API key. Get a fresh one at developer.riotgames.com.')
+    }
     if (res.status === 404) throw new Error('Account not found. Check your Riot ID and region.')
     throw new Error(`Riot API error: ${res.status}`)
   }

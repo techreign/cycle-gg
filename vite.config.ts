@@ -34,15 +34,15 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Cycle.gg',
+        name: 'Cycle.gg — cycle × league',
         short_name: 'Cycle.gg',
-        description: 'Period cycle + gaming performance tracker',
-        theme_color: '#ec4899',
-        background_color: '#0d0a14',
+        description: 'Correlate your cycle with your League of Legends performance.',
+        theme_color: '#e11d48',
+        background_color: '#110a0a',
         display: 'standalone',
+        orientation: 'portrait',
         icons: [
-          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
         ],
       },
     }),

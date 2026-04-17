@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
+import { useApp } from '../hooks/useApp'
 import { PHASE_CONFIG } from '../constants/phases'
 import { StatCard } from '../components/ui/StatCard'
 import { PhaseChip } from '../components/ui/PhaseChip'
@@ -11,6 +11,11 @@ import { ChampionPhaseTable } from '../components/charts/ChampionPhaseTable'
 import { MppdScore } from '../components/dashboard/MppdScore'
 import { BestWorstDays } from '../components/dashboard/BestWorstDays'
 import { BwipoMeter } from '../components/dashboard/BwipoMeter'
+import { ChampionRecs } from '../components/dashboard/ChampionRecs'
+import { CurrentStreak } from '../components/dashboard/CurrentStreak'
+import { PhaseForecast } from '../components/dashboard/PhaseForecast'
+import { DayOfWeekHeatmap } from '../components/dashboard/DayOfWeekHeatmap'
+import { ShareCard } from '../components/dashboard/ShareCard'
 
 export function DashboardPage() {
   const {
@@ -28,20 +33,15 @@ export function DashboardPage() {
   const hasGames = enrichedGames.length > 0
   const hasPeriods = periods.length > 0
 
-  // Overall win rate
   const overallWinRate =
     enrichedGames.length > 0
       ? (enrichedGames.filter(g => g.win).length / enrichedGames.length) * 100
       : 0
 
-  // Current phase win rate
   const currentPhaseStat = phaseStats.find(s => s.phase === currentPhase)
   const currentPhaseWinRate = currentPhaseStat?.winRate ?? 0
-
-  // Current phase aggression score
   const currentAggressionScore = currentPhaseStat?.aggressionScore ?? 0
 
-  // MPPD stat card value
   const mppdDisplay =
     mppd.gamesOnPeriod >= 3 && mppd.gamesOffPeriod >= 3
       ? `${mppd.score > 0 ? '+' : ''}${mppd.score.toFixed(1)}pp`
@@ -50,84 +50,67 @@ export function DashboardPage() {
   const mppdTrend: 'up' | 'down' | 'neutral' =
     mppd.direction === 'better' ? 'up' : mppd.direction === 'worse' ? 'down' : 'neutral'
 
-  // Phase config for current phase
   const currentPhaseConfig =
     currentPhase !== 'unknown' ? PHASE_CONFIG[currentPhase as keyof typeof PHASE_CONFIG] : null
 
   if (!hasGames) {
     return (
-      <div style={{ padding: '32px 24px', maxWidth: 900, margin: '0 auto' }}>
+      <div className="max-w-4xl mx-auto px-5 py-8">
         <EmptyState
           title="No games logged yet"
-          description="Log some games and your period to see your analytics"
-          action={{ label: 'Log a Game', onClick: () => navigate('/log-game') }}
+          description="Log some games and your period to see your analytics."
+          action={{ label: 'Log your first game', onClick: () => navigate('/log-game') }}
         />
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '24px 20px', maxWidth: 1200, margin: '0 auto' }}>
-      {/* ── Top strip: current phase ── */}
+    <div className="max-w-[1200px] mx-auto px-5 py-8 space-y-6">
+      {/* ── Hero: current phase ── */}
       <div
-        className="glass-card"
+        className="rounded-2xl p-5 md:p-6 flex items-center gap-5 flex-wrap fade-up"
         style={{
-          padding: '20px 24px',
-          marginBottom: 24,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-          flexWrap: 'wrap',
+          background: currentPhaseConfig
+            ? `linear-gradient(120deg, ${currentPhaseConfig.color}22, ${currentPhaseConfig.color}08 50%, transparent)`
+            : 'var(--color-bg-raised)',
+          border: `1px solid ${currentPhaseConfig ? currentPhaseConfig.color + '40' : 'rgba(255,255,255,0.06)'}`,
         }}
       >
         {hasPeriods ? (
           <>
             <PhaseChip phase={currentPhase} size="lg" />
-            <div>
+            <div className="flex-1 min-w-0">
               {currentCycleDay !== null && (
-                <p style={{ color: '#e2e8f0', fontWeight: 500, fontSize: 15, marginBottom: 2 }}>
+                <p className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
                   Day {currentCycleDay} of your cycle
                 </p>
               )}
               {currentPhaseConfig && (
-                <p style={{ color: '#94a3b8', fontSize: 13 }}>
-                  {currentPhaseConfig.description} — Days {currentPhaseConfig.days}
+                <p className="text-[13px] mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                  {currentPhaseConfig.description} · Days {currentPhaseConfig.days}
                 </p>
               )}
             </div>
           </>
         ) : (
-          <div>
-            <p style={{ color: '#94a3b8', fontSize: 14 }}>
+          <div className="flex-1">
+            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
               Log your first period to get started with cycle-aware analytics.{' '}
               <button
                 onClick={() => navigate('/log-period')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#ec4899',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                  textDecoration: 'underline',
-                  padding: 0,
-                }}
+                className="underline font-semibold"
+                style={{ color: '#fb7185' }}
               >
-                Log period
+                Log period →
               </button>
             </p>
           </div>
         )}
       </div>
 
-      {/* ── Stat cards row (2x2 mobile, 4x1 desktop) ── */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 16,
-          marginBottom: 24,
-        }}
-      >
+      {/* ── Stat cards ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 fade-up-2">
         <StatCard
           title="Overall Win Rate"
           value={`${overallWinRate.toFixed(1)}%`}
@@ -136,11 +119,7 @@ export function DashboardPage() {
         />
         <StatCard
           title="Current Phase WR"
-          value={
-            currentPhaseStat && currentPhaseStat.games > 0
-              ? `${currentPhaseWinRate.toFixed(1)}%`
-              : '—'
-          }
+          value={currentPhaseStat && currentPhaseStat.games > 0 ? `${currentPhaseWinRate.toFixed(1)}%` : '—'}
           subtitle={
             currentPhaseStat && currentPhaseStat.games > 0
               ? `${currentPhaseStat.games} games this phase`
@@ -148,9 +127,7 @@ export function DashboardPage() {
           }
           trend={
             currentPhaseStat && currentPhaseStat.games > 0
-              ? currentPhaseWinRate >= 50
-                ? 'up'
-                : 'down'
+              ? currentPhaseWinRate >= 50 ? 'up' : 'down'
               : 'neutral'
           }
         />
@@ -164,48 +141,49 @@ export function DashboardPage() {
           title="Total Games"
           value={enrichedGames.length}
           subtitle={`${enrichedGames.filter(g => g.win).length} wins`}
-          trend="neutral"
         />
       </div>
 
-      {/* ── MPPD Hero Card ── */}
-      <div style={{ marginBottom: 24 }}>
-        <MppdScore mppd={mppd} />
+      {/* ── NEW: Current streak + 7-day forecast ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 fade-up-3">
+        <CurrentStreak enrichedGames={enrichedGames} />
+        <PhaseForecast periods={periods} phaseStats={phaseStats} />
       </div>
 
-      {/* ── Charts section: 2-column on desktop ── */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 20,
-          marginBottom: 24,
-        }}
-      >
+      {/* ── NEW: Champion recommendations for current phase ── */}
+      <ChampionRecs enrichedGames={enrichedGames} currentPhase={currentPhase} />
+
+      {/* ── MPPD Hero ── */}
+      <MppdScore mppd={mppd} />
+
+      {/* ── Phase charts ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <WinRateByPhase phaseStats={phaseStats} />
         <AggressionByPhase phaseStats={phaseStats} />
       </div>
 
-      {/* ── KDA Trend full-width ── */}
-      <div style={{ marginBottom: 24 }}>
-        <KdaTrendLine enrichedGames={enrichedGames} />
-      </div>
+      {/* ── KDA Trend ── */}
+      <KdaTrendLine enrichedGames={enrichedGames} />
 
-      {/* ── Bottom section: 2-column on desktop ── */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 20,
-          marginBottom: 24,
-        }}
-      >
+      {/* ── NEW: Day-of-week heatmap ── */}
+      <DayOfWeekHeatmap enrichedGames={enrichedGames} />
+
+      {/* ── Best/Worst + Bwipo ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <BestWorstDays bestWorstDays={bestWorstDays} />
         <BwipoMeter aggressionScore={currentAggressionScore} />
       </div>
 
-      {/* ── Champion Table full-width ── */}
+      {/* ── Champion table ── */}
       <ChampionPhaseTable enrichedGames={enrichedGames} />
+
+      {/* ── NEW: Share card ── */}
+      <ShareCard
+        enrichedGames={enrichedGames}
+        phaseStats={phaseStats}
+        mppd={mppd}
+        currentPhase={currentPhase}
+      />
     </div>
   )
 }

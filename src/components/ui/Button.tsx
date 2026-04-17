@@ -26,9 +26,9 @@ export function Button({
   }
 
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-pink-500 to-violet-500 text-white hover:from-pink-400 hover:to-violet-400',
-    secondary: 'bg-white/10 text-white hover:bg-white/20 border border-white/10',
-    danger: 'bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 border border-rose-500/30',
+    primary: 'btn-rose-gradient font-semibold',
+    secondary: 'bg-white/8 text-white hover:bg-white/14 border border-white/10',
+    danger: 'bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 border border-rose-500/30',
     ghost: 'text-slate-400 hover:text-white hover:bg-white/10',
   }
 
