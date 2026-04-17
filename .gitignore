@@ -35,3 +35,5 @@ node_modules\ndist\n.firecrawl\n.playwright-mcp
 
 # Vercel
 .vercel/
+
+.vercel
