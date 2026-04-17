@@ -1,13 +1,16 @@
 /**
  * Vercel Edge Function — proxies Riot API requests from the browser.
  *
- * Path shape: /api/riot/{routing}/<riot-endpoint>
+ * Path shape: /api/riot/{routing}/<...riot-path>
  *   routing ∈ {americas, europe, asia, sea}
  *
- * The client sends its own developer key via the `X-Riot-Token` header; we
- * just forward to the correct regional base URL and relay the response.
- * Add a fallback key by setting the RIOT_API_KEY env var on the Vercel
- * project (optional — the canonical model is BYO-key).
+ * The `vercel.json` rewrite strips the `/api/riot/` prefix and hands us
+ * the remainder as a `path` query param. The client sends its own
+ * developer key via the `X-Riot-Token` header; we forward to the
+ * correct regional base URL and relay the response.
+ *
+ * Set `RIOT_API_KEY` as a Vercel environment variable to provide a
+ * fallback key (optional — the canonical model is BYO-key).
  */
 
 export const config = { runtime: 'edge' }
@@ -32,8 +35,14 @@ export default async function handler(request: Request): Promise<Response> {
     return jsonError(405, 'Only GET is supported.', corsHeaders)
   }
 
-  // URL shape: /api/riot/<routing>/<...rest>
-  const parts = url.pathname.replace(/^\/api\/riot\//, '').split('/').filter(Boolean)
+  // The rewrite sends us the captured path (everything after /api/riot/)
+  // via the `path` query parameter. Fall back to parsing the URL path
+  // directly so the function also works when hit without the rewrite.
+  let rawPath = url.searchParams.get('path') ?? ''
+  if (!rawPath) {
+    rawPath = url.pathname.replace(/^\/api\/riot\/?/, '')
+  }
+  const parts = rawPath.split('/').filter(Boolean)
   if (parts.length < 2) {
     return jsonError(400, 'Bad request: routing and endpoint required.', corsHeaders)
   }
@@ -44,7 +53,13 @@ export default async function handler(request: Request): Promise<Response> {
   }
 
   const riotPath = parts.slice(1).join('/')
-  const riotUrl = `${BASE_BY_ROUTING[routing]}/${riotPath}${url.search}`
+
+  // Forward all original query params except `path` (our internal marker).
+  const forwardedParams = new URLSearchParams(url.searchParams)
+  forwardedParams.delete('path')
+  const search = forwardedParams.toString() ? `?${forwardedParams.toString()}` : ''
+
+  const riotUrl = `${BASE_BY_ROUTING[routing]}/${riotPath}${search}`
 
   const token =
     request.headers.get('X-Riot-Token') ??
@@ -74,8 +89,6 @@ export default async function handler(request: Request): Promise<Response> {
 }
 
 function buildCorsHeaders(request: Request): Record<string, string> {
-  // Same-origin is the default in prod (Vercel serves both static + API
-  // from the same domain). Allow localhost for dev convenience.
   const origin = request.headers.get('Origin') ?? ''
   const allowDevOrigin =
     origin === 'http://localhost:5173' || origin === 'http://localhost:5174'
